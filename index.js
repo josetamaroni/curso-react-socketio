@@ -1,20 +1,35 @@
-// Servidor de Express
-const express = require('express');
-const app = express();
+const Server = require("./models/server");
+require('dotenv').config();
 
-// Servidor de sockets
-const server = require('http').createServer(app);
+const server = new Server();
 
-// Configuración del socket server
-const io = require('socket.io')(server);
+server.execute();
 
-// Desplegar el directorio público
-app.use( express.static( __dirname + '/public' ) )
+// io.on('connection', ( client ) => { 
+//     // console.log(client.id)
 
-io.on('connection', () => { 
-    console.log('Cliente conectado!')
- });
+//     // Emitir mensaje al cliente
+//     // client.emit('mensaje-bienvenida', {
+//     //     msg: 'Bienvenido al Server',
+//     //     fecha: new Date()
+//     // });
 
-server.listen(3000, ()=>{
-    console.log('Server corriendo en puerto: 3000');
-});
+//     // Escuchar mensaje del cliente
+//     // client.on('mensaje-cliente', ( data )=>{
+//     //     console.log('Mensaje desde el cliente', {data})
+//     // })
+
+
+//     // Mini chat
+//     client.on('mensaje-to-server', (data) => {
+//         console.log('Mensaje desde el cliente', {data})
+
+//         // client: solo envia el mensaje a este cliente que se conectó
+//         // client.emit('mensaje-from-server', data);
+
+//         //io: envia el mensaje a todos los conectados
+//         io.emit('mensaje-from-server', data);
+
+//     })
+
+// });
