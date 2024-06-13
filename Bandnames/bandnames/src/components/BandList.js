@@ -77,7 +77,7 @@ export const BandList = () => {
 
   return (
     <>
-        <table className='table table-stripped'>
+        <table className='table table-stripped table-dark'>
             <thead>
                 <tr>
                     <th>Votar</th>

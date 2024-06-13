@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { BandAdd } from "../components/BandAdd";
 import { BandList } from "../components/BandList";
 import { SocketContext } from '../context/socketContext';
+import { BandChart } from '../components/BandChart';
 
 function HomePage() {
 
@@ -24,7 +25,13 @@ function HomePage() {
       <h1>BandNames</h1>
       <hr/>
 
-      <div className="row">
+      <div className='row'>
+          <div className='col'>
+            <BandChart />
+          </div>
+      </div>
+
+      <div className="row mt-5">
         <div className="col-8">
           <BandList />
         </div>
