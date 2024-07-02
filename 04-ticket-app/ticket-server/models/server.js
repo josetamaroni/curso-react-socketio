@@ -19,14 +19,25 @@ class Server {
         
         // Configuraciones de sockets
         this.io = socketio( this.server, { /* configuraciones */ } );
+
+        // Instancia de Socket
+        this.socket = new Sockets( this.io );
     }
 
     middlewares() {
         // Desplegar el directorio público
         this.app.use( express.static( path.resolve( __dirname, '../public' ) ) );
-
+        
         // CORS
         this.app.use( cors() );
+
+        // Get de los ultimos tickets
+        this.app.get('/ultimos', (req,res) => {
+            res.json( { 
+                ok: true,
+                ultimos: this.socket.ticketList.ultimos13
+             } );
+        });
 
     }
 

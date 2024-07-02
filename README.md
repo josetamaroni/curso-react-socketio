@@ -4,3 +4,4 @@
  - Sección #3 Creación del proyecto BandNames
  - Sección #4 Continuación del proyecto BandNames, usando useSocket, useContext, SocketProvider.
  - Sección #5 Proyecto TicketApp - Aplicación de colas.
+ - Sección #6 Proyecto TicketApp - Creación de un sistema de colas.
