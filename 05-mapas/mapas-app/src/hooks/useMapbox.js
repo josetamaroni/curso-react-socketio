@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Subject } from 'rxjs';
+import { v4 } from 'uuid';
 import mapboxgl from 'mapbox-gl';
 
 // TODO: CAMBIAR A VARIABLE GLOBAL env
 mapboxgl.accessToken = 'pk.eyJ1IjoidGF0b2pvc2UiLCJhIjoiY2x5cTZzenA0MDc4ZzJqcTAxeGo4MGs0YiJ9.eq-F4VLlgPkMG-L5OB_eHw';
-var i = 1;
+
 export const useMapbox = ( puntoIncial ) => {
 
     const mapaDiv = useRef();
@@ -18,22 +19,24 @@ export const useMapbox = ( puntoIncial ) => {
     const movimientoMarcador = useRef( new Subject() );
 
     //* Funcion para agregar marcadores
-    const agregarMarcador = useCallback((ev) => {
-        const { lng, lat } = ev.lngLat;
+    const agregarMarcador = useCallback((ev,id) => {
+        const { lng, lat } = ev.lngLat || ev;
         const marker = new mapboxgl.Marker();
-        marker.id = `marker${i++}`;
+        marker.id = id ?? v4();
         marker
             .setLngLat([lng, lat])
             .addTo( mapa.current )
             .setDraggable(true);
+
         marcadores.current[marker.id] = marker;
 
-        //TODO: si el marcador tiene ID no emitir
-        nuevoMarcador.current.next({
-            id: marker.id,
-            lng,
-            lat
-        });
+        if ( !id ) {
+            nuevoMarcador.current.next({
+                id: marker.id,
+                lng,
+                lat
+            });
+        }
 
         //* escuchar movimiento de los markers
         marker.on('drag',({ target })=>{
@@ -47,7 +50,15 @@ export const useMapbox = ( puntoIncial ) => {
                 lat
             })
         })
-    },[])
+    },[]);
+
+    // Funcion para actualizar la ubicacion del marcador
+    const actualizarMarcador = useCallback( ({ id,lng,lat }) => {
+        console.log('id',id)
+        console.log('test',marcadores.current[id])
+        marcadores.current[id].setLngLat([ lng, lat ]);
+    },[]);
+
 
     useEffect(() => {
         const map = new mapboxgl.Map({
@@ -66,7 +77,7 @@ export const useMapbox = ( puntoIncial ) => {
                 zoom: mapa.current.getZoom().toFixed(2)
             });
         })
-    }, [])
+    }, [puntoIncial])
   
     //* Agregar marcadores cuando se hace click
     useEffect(() => {
@@ -79,6 +90,7 @@ export const useMapbox = ( puntoIncial ) => {
         marcadores,
         nuevoMarcador$: nuevoMarcador.current, //* el signo $ representa un observable
         movimientoMarcador$: movimientoMarcador.current,
-        agregarMarcador
+        agregarMarcador,
+        actualizarMarcador
     }
 }

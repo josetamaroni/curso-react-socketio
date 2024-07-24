@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useMapbox } from '../hooks/useMapbox';
+import { SocketContext } from '../context/socketContext';
 
 const puntoIncial = {
   lng: -122.4722,
@@ -9,19 +10,49 @@ const puntoIncial = {
 
 export const MapaPage = () => {
 
-  const { coords, mapaDiv, nuevoMarcador$, movimientoMarcador$ } = useMapbox( puntoIncial );
+  const { coords, mapaDiv, nuevoMarcador$, movimientoMarcador$, agregarMarcador, actualizarMarcador } = useMapbox( puntoIncial );
+  const { socket } = useContext(SocketContext);
+
+  // Escuchar Marcadores Nuevos
+  useEffect(() => {
+    socket.on('marcadores-activos', (marcadores) => {
+      console.log(marcadores)
+      // recorrer marcadores
+      for(let id in marcadores){
+        agregarMarcador(marcadores[id], id);
+      }
+    })
+  }, [socket,agregarMarcador])
+  
 
   useEffect(() => {
     nuevoMarcador$.subscribe((newMarcador)=>{
-      console.log('MapaPage',newMarcador)
+      socket.emit('marcador-nuevo', newMarcador );
     });
-  }, [nuevoMarcador$])
+  }, [nuevoMarcador$,socket])
 
+  // Movimiento del marcador
   useEffect(() => {
-    movimientoMarcador$.subscribe((movimientoMarcador)=>{
-      console.log('movimiento',movimientoMarcador)
+    movimientoMarcador$.subscribe((marcador)=>{
+      socket.emit('marcador-actualizado', marcador);
     })
-  }, [movimientoMarcador$])
+  }, [socket,movimientoMarcador$])
+
+  // Mover marcador actualizado
+  useEffect(() => {
+    socket.on('marcador-actualizado', (marcador) => {
+      console.log('Marcador-actualizado',marcador)
+      actualizarMarcador(marcador);
+    })
+  }, [socket, actualizarMarcador])
+  
+
+  // Escuchar nuevos Marcadores
+  useEffect(() => {
+    socket.on('marcador-nuevo', (marcador) => {
+      agregarMarcador(marcador, marcador.id);
+    })
+  }, [socket,agregarMarcador])
   
   
   return (
