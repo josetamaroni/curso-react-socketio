@@ -1,4 +1,4 @@
-const { usuarioConectado, usuarioDesconectado } = require("../controllers/sockets");
+const { usuarioConectado, usuarioDesconectado, getUsuarios, grabarMensaje } = require("../controllers/sockets");
 const { comprobarJWT } = require("../helpers/jwt");
 
 
@@ -21,31 +21,28 @@ class Sockets {
             }
 
             await usuarioConectado(uid);
+
+            // Unir al usuario a una sala de socket.io
+            socket.join( uid );
             
-            //TODO: Saber que usuario esta activo mediante el UID
+            // Emitir todos los usuarios conectados
+            this.io.emit( 'lista-usuarios', await getUsuarios() );
+            
+            // Escuchar cuando un usuario manda un mensaje
+            socket.on('mensaje-personal', async ( payload ) => {
+                const mensaje = await grabarMensaje(payload);
+                this.io.to( payload.para ).emit('mensaje-personal', mensaje);
+                this.io.to( payload.de ).emit('mensaje-personal', mensaje);
+            });
 
-            //TODO: Emitir todos los usuarios conectados
-
-            //TODO: Socket Join, uid
-
-            //TODO: Escuchar cuando un usuario manda un mensaje
-            // socket.on('mensaje-personal', ( data ) => {
-            //     console.log( data );
-            //     this.io.emit('mensaje-from-server', data );
-            // });
-
-            //TODO: Disconnect
             // Marcar en la base de dato que el usuario se desconecto
-            //TODO: Emitir todos los usuarios conectados
+            // Disconnect / Emitir todos los usuarios conectados
             socket.on('disconnect', async ()=>{
                 await usuarioDesconectado(uid);
+                this.io.emit( 'lista-usuarios', await getUsuarios() );
             })
-
         });
     }
-
-
 }
-
 
 module.exports = Sockets;

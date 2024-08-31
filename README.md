@@ -7,3 +7,8 @@
  - Sección #6 Proyecto TicketApp - Creación de un sistema de colas.
  - Sección #7 Proyecto Mapa en tiempo real - Creación de un mapa con marcadores moviles en tiempo real.
  - Sección #8 Proyecto Mapa en tiempo real - Creación de un mapa con marcadores moviles en tiempo real.
+ - Sección #9 Chat Introduccion.
+ - Sección #10 Chat Backend.
+ - Sección #11 Chat Diseño y estructura en React - ChatApp.
+ - Sección #12 Chat Autenticación.
+ - Sección #13 Chat Mensajeria uno a uno.
